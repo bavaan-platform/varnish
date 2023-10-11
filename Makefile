@@ -7,15 +7,9 @@ ALPINE_VER ?= 3.18
 
 PLATFORM ?= linux/amd64
 
-ifeq ($(BASE_IMAGE_STABILITY_TAG),)
-    BASE_IMAGE_TAG := $(ALPINE_VER)
-else
-    BASE_IMAGE_TAG := $(ALPINE_VER)-$(BASE_IMAGE_STABILITY_TAG)
-endif
-
 TAG ?= $(VARNISH_VER_MINOR)
 
-REPO = wodby/varnish
+REPO = bavaan/varnish
 NAME = varnish-$(VARNISH_VER_MINOR)
 
 ifneq ($(STABILITY_TAG),)
@@ -23,6 +17,8 @@ ifneq ($(STABILITY_TAG),)
         override TAG := $(TAG)-$(STABILITY_TAG)
     endif
 endif
+
+BASE_IMAGE_TAG ?= $(TAG)
 
 .PHONY: build buildx-build buildx-push buildx-build-amd64 test test-clean push shell run start stop logs clean release
 
@@ -55,9 +51,7 @@ buildx-push:
 	    ./
 
 test:
-	cd ./tests/basic && IMAGE=$(REPO):$(TAG) ./run.sh
-	cd ./tests/drupal && IMAGE=$(REPO):$(TAG) ./run.sh
-	cd ./tests/wordpress && IMAGE=$(REPO):$(TAG) ./run.sh
+	cd ./tests/moodle && IMAGE=$(REPO):$(TAG) ./run.sh
 
 push:
 	docker push $(REPO):$(TAG)
